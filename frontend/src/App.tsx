@@ -1,5 +1,6 @@
 import LoginForm from './components/auth/LoginForm';
 import RegisterForm from './components/auth/RegisterForm';
+import ProfilePage from './pages/ProfilePage';
 
 export default function App() {
   return (
@@ -7,6 +8,7 @@ export default function App() {
       <h1>Інтернет-магазин спортивного харчування</h1>
       <LoginForm />
       <RegisterForm />
+      <ProfilePage />
     </div>
   );
 }
