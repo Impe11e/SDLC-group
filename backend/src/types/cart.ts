@@ -1,8 +1,8 @@
 export interface AddToCartDTO {
-  productId: number;
-  quantity: number;
+    productId: number;
+    quantity: number;
 }
 
 export interface UpdateCartItemDTO {
-  quantity: number;
+    quantity: number;
 }
