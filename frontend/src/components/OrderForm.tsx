@@ -1,8 +1,5 @@
 import React, { useState } from 'react';
-
-interface CheckoutFormProps {
-    onSubmitOrder: (formData: { fullName: string; deliveryAddress: string; paymentMethod: string }) => void;
-}
+import type { CheckoutFormProps } from '../types/order';
 
 export const CheckoutForm: React.FC<CheckoutFormProps> = ({ onSubmitOrder }) => {
     const [fullName, setFullName] = useState('');
@@ -38,7 +35,10 @@ export const CheckoutForm: React.FC<CheckoutFormProps> = ({ onSubmitOrder }) => 
                 </div>
                 <div>
                     <label>Спосіб оплати:</label>
-                    <select value={paymentMethod} onChange={(e) => setPaymentMethod(e.target.value)}>
+                    <select
+                        value={paymentMethod}
+                        onChange={(e) => setPaymentMethod(e.target.value)}
+                    >
                         <option value="CASH_ON_DELIVERY">Готівкою при отриманні</option>
                     </select>
                 </div>

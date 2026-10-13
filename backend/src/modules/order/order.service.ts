@@ -1,25 +1,29 @@
 import { OrderRepository } from './order.repository.js';
 import { CartRepository } from '../cart/cart.repository.js';
-import { CreateOrderDTO } from './order.schema.js';
+import type { CreateOrderDTO } from '../../types/order.js';
 
 export class OrderService {
-  private orderRepository = new OrderRepository();
-  private cartRepository = new CartRepository();
+    private orderRepository = new OrderRepository();
+    private cartRepository = new CartRepository();
 
-  async placeOrder(userId: number, dto: CreateOrderDTO) {
-    const cartItems = await this.cartRepository.getCartItemsByUserId(userId);
-    
-    if (!cartItems || cartItems.length === 0) {
-      throw new Error('Кошик порожній, неможливо оформити замовлення');
+    async placeOrder(userId: number, dto: CreateOrderDTO) {
+        const cartItems = await this.cartRepository.getCartItemsByUserId(userId);
+
+        if (!cartItems || cartItems.length === 0) {
+            throw new Error('Кошик порожній, неможливо оформити замовлення');
+        }
+
+        const totalAmount = 1500;
+
+        const orderId = await this.orderRepository.createOrderTransaction(
+            userId,
+            {
+                ...dto,
+                totalAmount,
+            },
+            cartItems
+        );
+
+        return orderId;
     }
-
-    const totalAmount = 1500; 
-
-    const orderId = await this.orderRepository.createOrderTransaction(userId, {
-      ...dto,
-      totalAmount,
-    }, cartItems);
-
-    return orderId;
-  }
 }

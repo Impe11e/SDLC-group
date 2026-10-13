@@ -4,7 +4,7 @@ import { OrderService } from './order.service.js';
 const router = Router();
 const orderService = new OrderService();
 
-router.post('/orders', async (req, res) => {
+router.post('/', async (req, res) => {
     try {
         const userId = 1; // TODO: брати з JWT через Auth Middleware
         const { fullName, deliveryAddress, paymentMethod } = req.body;

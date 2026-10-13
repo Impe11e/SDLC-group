@@ -1,18 +1,5 @@
 import React from 'react';
-
-export interface CartItem {
-    productId: number;
-    productName: string;
-    price: number;
-    quantity: number;
-}
-
-interface CartProps {
-    items: CartItem[];
-    onUpdateQuantity: (productId: number, quantity: number) => void;
-    onRemoveItem: (productId: number) => void;
-    onProceedToCheckout: () => void;
-}
+import type { CartProps } from '../types/cart';
 
 export const Cart: React.FC<CartProps> = ({
     items,
@@ -40,9 +27,13 @@ export const Cart: React.FC<CartProps> = ({
                                     type="number"
                                     min="1"
                                     value={item.quantity}
-                                    onChange={(e) => onUpdateQuantity(item.productId, Number(e.target.value))}
+                                    onChange={(e) =>
+                                        onUpdateQuantity(item.productId, Number(e.target.value))
+                                    }
                                 />
-                                <button onClick={() => onRemoveItem(item.productId)}>Видалити</button>
+                                <button onClick={() => onRemoveItem(item.productId)}>
+                                    Видалити
+                                </button>
                             </li>
                         ))}
                     </ul>
