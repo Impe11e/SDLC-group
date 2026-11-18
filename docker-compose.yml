@@ -1,0 +1,22 @@
+services:
+    db:
+        image: postgres:16-alpine
+        container_name: sdlc-postgres
+        restart: unless-stopped
+        environment:
+            POSTGRES_USER: ${DB_USER:-shop}
+            POSTGRES_PASSWORD: ${DB_PASSWORD:-shop}
+            POSTGRES_DB: ${DB_NAME:-shop}
+        ports:
+            - '${DB_PORT:-5432}:5432'
+        volumes:
+            - pgdata:/var/lib/postgresql/data
+            - ./backend/db:/docker-entrypoint-initdb.d:ro
+        healthcheck:
+            test: ['CMD-SHELL', 'pg_isready -U ${DB_USER:-shop} -d ${DB_NAME:-shop}']
+            interval: 5s
+            timeout: 3s
+            retries: 10
+
+volumes:
+    pgdata:
