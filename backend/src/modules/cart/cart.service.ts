@@ -1,28 +1,76 @@
-import { CartRepository } from './cart.repository.js';
+import { conflict, notFound } from '../../errors/http-error.js';
+import type { Cart, CartItem, ICartRepository } from '../../types/cart.js';
+import type { IProductRepository } from '../../types/product.js';
+
+/** Рахуємо в копійках, щоб уникнути похибок float (0.1 + 0.2) */
+export function calculateTotal(items: Pick<CartItem, 'price' | 'quantity'>[]): number {
+    const cents = items.reduce(
+        (sum, item) => sum + Math.round(item.price * 100) * item.quantity,
+        0
+    );
+    return cents / 100;
+}
 
 export class CartService {
-  private cartRepository = new CartRepository();
+    private readonly cartRepo: ICartRepository;
+    private readonly productRepo: IProductRepository;
 
-  async getCart(userId: number) {
-    return await this.cartRepository.getCartItemsByUserId(userId);
-  }
-
-  async addToCart(userId: number, productId: number, quantity: number) {
-    if (quantity <= 0) {
-      throw new Error('Кількість має бути більшою за нуль');
+    constructor(cartRepo: ICartRepository, productRepo: IProductRepository) {
+        this.cartRepo = cartRepo;
+        this.productRepo = productRepo;
     }
-    await this.cartRepository.addOrUpdateItem(userId, productId, quantity);
-  }
 
-  async updateItemQuantity(userId: number, productId: number, quantity: number) {
-    if (quantity <= 0) {
-      await this.cartRepository.removeItem(userId, productId);
-    } else {
-      await this.cartRepository.updateQuantity(userId, productId, quantity);
+    async getCart(userId: number): Promise<Cart> {
+        const items = await this.cartRepo.findByUserId(userId);
+        return { items, totalAmount: calculateTotal(items) };
     }
-  }
 
-  async removeFromCart(userId: number, productId: number) {
-    await this.cartRepository.removeItem(userId, productId);
-  }
+    /** Додає товар; якщо він уже є в кошику — збільшує кількість */
+    async addItem(userId: number, productId: number, quantity: number): Promise<Cart> {
+        const product = await this.productRepo.findById(productId);
+        if (!product) throw notFound('Товар не знайдено');
+
+        const existing = await this.cartRepo.findItem(userId, productId);
+        const newQuantity = (existing?.quantity ?? 0) + quantity;
+
+        if (newQuantity > product.stock) {
+            throw conflict(
+                `Недостатньо товару "${product.name}" на складі (доступно: ${product.stock})`
+            );
+        }
+
+        await this.cartRepo.setQuantity(userId, productId, newQuantity);
+        return this.getCart(userId);
+    }
+
+    /** Встановлює точну кількість; 0 — видаляє позицію */
+    async updateQuantity(userId: number, productId: number, quantity: number): Promise<Cart> {
+        const existing = await this.cartRepo.findItem(userId, productId);
+        if (!existing) throw notFound('Товару немає в кошику');
+
+        if (quantity === 0) {
+            await this.cartRepo.removeItem(userId, productId);
+            return this.getCart(userId);
+        }
+
+        if (quantity > existing.stock) {
+            throw conflict(
+                `Недостатньо товару "${existing.productName}" на складі (доступно: ${existing.stock})`
+            );
+        }
+
+        await this.cartRepo.setQuantity(userId, productId, quantity);
+        return this.getCart(userId);
+    }
+
+    async removeItem(userId: number, productId: number): Promise<Cart> {
+        const removed = await this.cartRepo.removeItem(userId, productId);
+        if (!removed) throw notFound('Товару немає в кошику');
+        return this.getCart(userId);
+    }
+
+    async clear(userId: number): Promise<Cart> {
+        await this.cartRepo.clear(userId);
+        return this.getCart(userId);
+    }
 }

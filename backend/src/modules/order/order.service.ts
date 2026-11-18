@@ -1,13 +1,13 @@
 import { OrderRepository } from './order.repository.js';
-import { CartRepository } from '../cart/cart.repository.js';
+import { PgCartRepository } from '../cart/cart.repository.js';
 import type { CreateOrderDTO } from '../../types/order.js';
 
 export class OrderService {
     private orderRepository = new OrderRepository();
-    private cartRepository = new CartRepository();
+    private cartRepository = new PgCartRepository();
 
     async placeOrder(userId: number, dto: CreateOrderDTO) {
-        const cartItems = await this.cartRepository.getCartItemsByUserId(userId);
+        const cartItems = await this.cartRepository.findByUserId(userId);
 
         if (!cartItems || cartItems.length === 0) {
             throw new Error('Кошик порожній, неможливо оформити замовлення');

@@ -1,3 +1,4 @@
+import { notFound } from '../../errors/http-error.js';
 import type { IProductRepository } from '../../types/product.js';
 
 export class ProductService {
@@ -13,7 +14,7 @@ export class ProductService {
 
     async getById(id: number) {
         const product = await this.repo.findById(id);
-        if (!product) throw new Error('Товар не знайдено');
+        if (!product) throw notFound('Товар не знайдено');
         return product;
     }
 }

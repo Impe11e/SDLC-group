@@ -24,10 +24,6 @@ productRouter.get('/:id', async (req, res, next) => {
     try {
         res.json(await productService.getById(id));
     } catch (err) {
-        if ((err as Error).message === 'Товар не знайдено') {
-            res.status(404).json({ error: (err as Error).message });
-            return;
-        }
         next(err);
     }
 });

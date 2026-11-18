@@ -1,53 +1,79 @@
 import { Router } from 'express';
+import { getUserId, userContext } from '../../middleware/user-context.middleware.js';
+import { PgProductRepository } from '../product/product.repository.js';
+import { parseId } from '../product/product.schema.js';
+import { PgCartRepository } from './cart.repository.js';
+import { validateAddToCart, validateUpdateCartItem } from './cart.schema.js';
 import { CartService } from './cart.service.js';
 
+const cartService = new CartService(new PgCartRepository(), new PgProductRepository());
+
 export const cartRouter = Router();
-const cartService = new CartService();
+
+cartRouter.use(userContext);
 
 // Отримати кошик поточного користувача
-cartRouter.get('/', async (req, res) => {
+cartRouter.get('/', async (_req, res, next) => {
     try {
-        const userId = 1; // TODO: брати з req.user після Auth Middleware
-        const items = await cartService.getCart(userId);
-        res.json(items);
-    } catch (error: any) {
-        res.status(500).json({ error: error.message });
+        res.json(await cartService.getCart(getUserId(res)));
+    } catch (err) {
+        next(err);
     }
 });
 
 // Додати товар до кошика
-cartRouter.post('/', async (req, res) => {
+cartRouter.post('/', async (req, res, next) => {
+    const error = validateAddToCart(req.body);
+    if (error) {
+        res.status(400).json({ error });
+        return;
+    }
     try {
-        const userId = 1;
         const { productId, quantity } = req.body;
-        await cartService.addToCart(userId, productId, quantity);
-        res.status(201).json({ message: 'Товар додано до кошика' });
-    } catch (error: any) {
-        res.status(400).json({ error: error.message });
+        res.status(201).json(await cartService.addItem(getUserId(res), productId, quantity));
+    } catch (err) {
+        next(err);
     }
 });
 
-// Змінити кількість товару
-cartRouter.put('/:productId', async (req, res) => {
+// Змінити кількість товару (0 — видалити)
+cartRouter.put('/:productId', async (req, res, next) => {
+    const productId = parseId(req.params.productId);
+    if (!productId) {
+        res.status(400).json({ error: 'Некоректний ідентифікатор товару' });
+        return;
+    }
+    const error = validateUpdateCartItem(req.body);
+    if (error) {
+        res.status(400).json({ error });
+        return;
+    }
     try {
-        const userId = 1;
-        const productId = Number(req.params.productId);
-        const { quantity } = req.body;
-        await cartService.updateItemQuantity(userId, productId, quantity);
-        res.json({ message: 'Кількість оновлено' });
-    } catch (error: any) {
-        res.status(400).json({ error: error.message });
+        res.json(await cartService.updateQuantity(getUserId(res), productId, req.body.quantity));
+    } catch (err) {
+        next(err);
     }
 });
 
 // Видалити товар з кошика
-cartRouter.delete('/:productId', async (req, res) => {
+cartRouter.delete('/:productId', async (req, res, next) => {
+    const productId = parseId(req.params.productId);
+    if (!productId) {
+        res.status(400).json({ error: 'Некоректний ідентифікатор товару' });
+        return;
+    }
     try {
-        const userId = 1;
-        const productId = Number(req.params.productId);
-        await cartService.removeFromCart(userId, productId);
-        res.json({ message: 'Товар видалено з кошика' });
-    } catch (error: any) {
-        res.status(400).json({ error: error.message });
+        res.json(await cartService.removeItem(getUserId(res), productId));
+    } catch (err) {
+        next(err);
+    }
+});
+
+// Очистити кошик
+cartRouter.delete('/', async (_req, res, next) => {
+    try {
+        res.json(await cartService.clear(getUserId(res)));
+    } catch (err) {
+        next(err);
     }
 });
