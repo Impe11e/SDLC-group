@@ -23,12 +23,10 @@ app.use(
             res.status(err.status).json({ error: err.message });
             return;
         }
-        // Помилка парсингу JSON від express.json()
         if (err.type === 'entity.parse.failed') {
             res.status(400).json({ error: 'Некоректний JSON у тілі запиту' });
             return;
         }
-        // БД недоступна — відповідаємо 503, щоб клієнт розумів, що це тимчасово
         if (err.code === 'ECONNREFUSED' || err.code === 'ETIMEDOUT') {
             console.error(`Database unavailable: ${err.code}`);
             res.status(503).json({ error: 'База даних тимчасово недоступна' });

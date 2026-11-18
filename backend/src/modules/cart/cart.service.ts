@@ -2,7 +2,6 @@ import { conflict, notFound } from '../../errors/http-error.js';
 import type { Cart, CartItem, ICartRepository } from '../../types/cart.js';
 import type { IProductRepository } from '../../types/product.js';
 
-/** Рахуємо в копійках, щоб уникнути похибок float (0.1 + 0.2) */
 export function calculateTotal(items: Pick<CartItem, 'price' | 'quantity'>[]): number {
     const cents = items.reduce(
         (sum, item) => sum + Math.round(item.price * 100) * item.quantity,
@@ -25,7 +24,6 @@ export class CartService {
         return { items, totalAmount: calculateTotal(items) };
     }
 
-    /** Додає товар; якщо він уже є в кошику — збільшує кількість */
     async addItem(userId: number, productId: number, quantity: number): Promise<Cart> {
         const product = await this.productRepo.findById(productId);
         if (!product) throw notFound('Товар не знайдено');
@@ -43,7 +41,6 @@ export class CartService {
         return this.getCart(userId);
     }
 
-    /** Встановлює точну кількість; 0 — видаляє позицію */
     async updateQuantity(userId: number, productId: number, quantity: number): Promise<Cart> {
         const existing = await this.cartRepo.findItem(userId, productId);
         if (!existing) throw notFound('Товару немає в кошику');

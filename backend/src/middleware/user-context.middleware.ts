@@ -2,11 +2,6 @@ import type { NextFunction, Request, Response } from 'express';
 
 const DEFAULT_USER_ID = 1;
 
-/**
- * Визначає поточного користувача із заголовка X-User-Id.
- * Тимчасове рішення, доки модуль auth не видає справжній JWT:
- * тоді тут достатньо буде брати id з розшифрованого токена.
- */
 export function userContext(req: Request, res: Response, next: NextFunction) {
     const header = req.header('X-User-Id');
 

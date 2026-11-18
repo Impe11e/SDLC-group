@@ -12,7 +12,6 @@ export const cartRouter = Router();
 
 cartRouter.use(userContext);
 
-// Отримати кошик поточного користувача
 cartRouter.get('/', async (_req, res, next) => {
     try {
         res.json(await cartService.getCart(getUserId(res)));
@@ -21,7 +20,6 @@ cartRouter.get('/', async (_req, res, next) => {
     }
 });
 
-// Додати товар до кошика
 cartRouter.post('/', async (req, res, next) => {
     const error = validateAddToCart(req.body);
     if (error) {
@@ -36,7 +34,6 @@ cartRouter.post('/', async (req, res, next) => {
     }
 });
 
-// Змінити кількість товару (0 — видалити)
 cartRouter.put('/:productId', async (req, res, next) => {
     const productId = parseId(req.params.productId);
     if (!productId) {
@@ -55,7 +52,6 @@ cartRouter.put('/:productId', async (req, res, next) => {
     }
 });
 
-// Видалити товар з кошика
 cartRouter.delete('/:productId', async (req, res, next) => {
     const productId = parseId(req.params.productId);
     if (!productId) {
@@ -69,7 +65,6 @@ cartRouter.delete('/:productId', async (req, res, next) => {
     }
 });
 
-// Очистити кошик
 cartRouter.delete('/', async (_req, res, next) => {
     try {
         res.json(await cartService.clear(getUserId(res)));

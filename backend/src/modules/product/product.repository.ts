@@ -1,7 +1,6 @@
 import { pool } from '../../db/pool.js';
 import type { IProductRepository, Product } from '../../types/product.js';
 
-// price::float8 — pg повертає NUMERIC як рядок, тому приводимо до числа в SQL
 const SELECT_PRODUCT = `
     SELECT id, name, description, category, price::float8 AS price, stock
     FROM products
