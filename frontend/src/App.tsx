@@ -11,7 +11,6 @@ import { productService } from './services/productService';
 import type { Cart as CartData } from './types/cart';
 import type { Order, OrderFormData } from './types/order';
 import type { Product } from './types/product';
-import { formatPrice } from './utils/format';
 import { useNavigate } from 'react-router-dom';
 import { authService } from './services/authService';
 
@@ -100,11 +99,9 @@ export default function App() {
         setSuccessMessage(null);
         try {
             const order = await orderService.create(formData);
-            setSuccessMessage(
-                `Замовлення №${order.id} на суму ${formatPrice(order.totalAmount)} успішно оформлено!`
-            );
-            applyShopData(await fetchShopData());
-            window.scrollTo({ top: 0, behavior: 'smooth' });
+             navigate('/order-success', {
+            state: { orderId: order.id, totalAmount: order.totalAmount },
+        });
             return true;
         } catch (err) {
             setError(getErrorMessage(err));
