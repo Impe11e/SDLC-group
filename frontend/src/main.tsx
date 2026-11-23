@@ -5,6 +5,8 @@ import App from './App.tsx';
 import './index.css';
 import LoginPage from './components/LoginPage.tsx';
 import RegisterPage from './components/RegisterPage.tsx';
+import ProductPage from './components/ProductPage.tsx';
+import OrderSuccessPage from './components/OrderSuccessPage.tsx';
 
 createRoot(document.getElementById('root')!).render(
     <StrictMode>
@@ -13,6 +15,8 @@ createRoot(document.getElementById('root')!).render(
                 <Route path="/" element={<App />} />
                 <Route path="/login" element={<LoginPage />} />
                 <Route path="/register" element={<RegisterPage />} />
+                <Route path="/products/:id" element={<ProductPage />} />
+                <Route path="/order-success" element={<OrderSuccessPage />} />
             </Routes>
         </BrowserRouter>
     </StrictMode>

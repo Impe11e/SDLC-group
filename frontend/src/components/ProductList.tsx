@@ -1,4 +1,5 @@
-import React from 'react';
+import React, { useMemo, useState } from 'react';
+import { Link } from 'react-router-dom';
 import type { ProductListProps } from '../types/product';
 import { formatPrice } from '../utils/format';
 
@@ -8,20 +9,58 @@ export const ProductList: React.FC<ProductListProps> = ({
     busy,
     onAddToCart,
 }) => {
-    if (products.length === 0) {
-        return (
-            <section className="products">
-                <h2>Каталог</h2>
-                <p className="muted">Товарів поки немає</p>
-            </section>
+    const [search, setSearch] = useState('');
+    const [category, setCategory] = useState('');
+
+    const categories = useMemo(
+        () => Array.from(new Set(products.map((p) => p.category))),
+        [products]
+    );
+
+    const filtered = useMemo(() => {
+        const query = search.trim().toLowerCase();
+        return products.filter(
+            (p) =>
+                (!category || p.category === category) &&
+                (!query || p.name.toLowerCase().includes(query))
         );
-    }
+    }, [products, search, category]);
+
+    const resetFilters = () => {
+        setSearch('');
+        setCategory('');
+    };
 
     return (
         <section className="products">
             <h2>Каталог</h2>
+
+            <div className="catalog-filters">
+                <input
+                    placeholder="Пошук за назвою"
+                    value={search}
+                    onChange={(e) => setSearch(e.target.value)}
+                />
+                <select value={category} onChange={(e) => setCategory(e.target.value)}>
+                    <option value="">Усі категорії</option>
+                    {categories.map((c) => (
+                        <option key={c} value={c}>
+                            {c}
+                        </option>
+                    ))}
+                </select>
+                <button type="button" onClick={resetFilters}>
+                    Скинути
+                </button>
+            </div>
+
+            {products.length === 0 && <p className="muted">Товарів поки немає</p>}
+            {products.length > 0 && filtered.length === 0 && (
+                <p className="muted">За вашим запитом нічого не знайдено</p>
+            )}
+
             <ul className="product-grid">
-                {products.map((product) => {
+                {filtered.map((product) => {
                     const inCart = cartQuantities[product.id] ?? 0;
                     const outOfStock = product.stock === 0;
                     const limitReached = inCart >= product.stock;
@@ -29,7 +68,9 @@ export const ProductList: React.FC<ProductListProps> = ({
                     return (
                         <li key={product.id} className="product-card">
                             <span className="product-category">{product.category}</span>
-                            <h3>{product.name}</h3>
+                            <h3>
+                                <Link to={`/products/${product.id}`}>{product.name}</Link>
+                            </h3>
                             <p className="muted">{product.description}</p>
                             <p className="product-price">{formatPrice(product.price)}</p>
                             <p className="muted">

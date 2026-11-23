@@ -321,3 +321,10 @@ button.link-button:hover:not(:disabled) {
     font-weight: 600;
     margin: 4px 0 0;
 }
+
+.catalog-filters {
+    display: flex;
+    gap: 8px;
+    flex-wrap: wrap;
+    margin-bottom: 16px;
+}

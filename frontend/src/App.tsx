@@ -11,7 +11,8 @@ import { productService } from './services/productService';
 import type { Cart as CartData } from './types/cart';
 import type { Order, OrderFormData } from './types/order';
 import type { Product } from './types/product';
-import { formatPrice } from './utils/format';
+import { useNavigate } from 'react-router-dom';
+import { authService } from './services/authService';
 
 const EMPTY_CART: CartData = { items: [], totalAmount: 0 };
 
@@ -25,6 +26,7 @@ async function fetchShopData() {
 }
 
 export default function App() {
+    const navigate = useNavigate();
     const [products, setProducts] = useState<Product[]>([]);
     const [cart, setCart] = useState<CartData>(EMPTY_CART);
     const [orders, setOrders] = useState<Order[]>([]);
@@ -65,7 +67,13 @@ export default function App() {
         }
     };
 
-    const handleAddToCart = (productId: number) => runCartAction(() => cartService.add(productId));
+    const handleAddToCart = (productId: number) => {
+    if (!authService.isLoggedIn()) {
+        navigate('/login');
+        return;
+    }
+    return runCartAction(() => cartService.add(productId));
+};
 
     const handleUpdateQuantity = (productId: number, quantity: number) =>
         runCartAction(() => cartService.updateQuantity(productId, Math.max(quantity, 0)));
@@ -82,16 +90,18 @@ export default function App() {
     };
 
     const handleSubmitOrder = async (formData: OrderFormData): Promise<boolean> => {
+        if (!authService.isLoggedIn()) {
+            navigate('/login');
+            return false;
+        }
         setSubmitting(true);
         setError(null);
         setSuccessMessage(null);
         try {
             const order = await orderService.create(formData);
-            setSuccessMessage(
-                `Замовлення №${order.id} на суму ${formatPrice(order.totalAmount)} успішно оформлено!`
-            );
-            applyShopData(await fetchShopData());
-            window.scrollTo({ top: 0, behavior: 'smooth' });
+             navigate('/order-success', {
+            state: { orderId: order.id, totalAmount: order.totalAmount },
+        });
             return true;
         } catch (err) {
             setError(getErrorMessage(err));
