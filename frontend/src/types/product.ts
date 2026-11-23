@@ -5,6 +5,9 @@ export interface Product {
     category: string;
     price: number;
     stock: number;
+    manufacturer: string;
+    composition: string;
+    imageUrl: string;
 }
 
 export interface ProductListProps {

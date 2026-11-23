@@ -2,6 +2,7 @@ import React, { useMemo, useState } from 'react';
 import { Link } from 'react-router-dom';
 import type { ProductListProps } from '../types/product';
 import { formatPrice } from '../utils/format';
+import { ProductImage } from './ProductImage';
 
 export const ProductList: React.FC<ProductListProps> = ({
     products,
@@ -67,6 +68,9 @@ export const ProductList: React.FC<ProductListProps> = ({
 
                     return (
                         <li key={product.id} className="product-card">
+                            <Link to={`/products/${product.id}`} className="product-image-link">
+                                <ProductImage product={product} className="product-image" />
+                            </Link>
                             <span className="product-category">{product.category}</span>
                             <h3>
                                 <Link to={`/products/${product.id}`}>{product.name}</Link>

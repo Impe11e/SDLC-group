@@ -32,7 +32,6 @@ export default [
         },
     },
 
-    // Backend (TypeScript)
     ...tseslint.configs.recommended.map((config) => ({
         ...config,
         files: ['backend/**/*.ts'],
@@ -43,10 +42,12 @@ export default [
             globals: {
                 ...globals.node,
             },
+            parserOptions: {
+                tsconfigRootDir: import.meta.dirname,
+            },
         },
         rules: {
             ...sharedRules,
-            // Серверу потрібні логи старту та помилок БД, решта console заборонена
             'no-console': ['error', { allow: ['info', 'warn', 'error'] }],
             '@typescript-eslint/no-unused-vars': [
                 'error',

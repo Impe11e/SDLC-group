@@ -25,6 +25,7 @@
         "prepare": "husky",
         "db:up": "docker compose up -d",
         "db:down": "docker compose down",
+        "db:migrate": "docker compose exec -T db sh -c 'psql -v ON_ERROR_STOP=1 -U \"$POSTGRES_USER\" -d \"$POSTGRES_DB\"' < backend/db/03_product_details.sql",
         "dev:backend": "npm run dev -w backend",
         "dev:frontend": "npm run dev -w frontend",
         "build": "npm run build --workspaces",

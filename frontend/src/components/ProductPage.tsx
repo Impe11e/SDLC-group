@@ -5,6 +5,7 @@ import { cartService } from '../services/cartService';
 import { productService } from '../services/productService';
 import type { Product } from '../types/product';
 import { formatPrice } from '../utils/format';
+import { ProductImage } from './ProductImage';
 
 export default function ProductPage() {
     const { id } = useParams();
@@ -60,23 +61,32 @@ export default function ProductPage() {
             )}
 
             {product && (
-                <article>
-                    <span className="product-category">{product.category}</span>
-                    <h1>{product.name}</h1>
-                    <p>{product.description}</p>
-                    <p className="product-price">{formatPrice(product.price)}</p>
-                    <p className="muted">
-                        {product.stock === 0
-                            ? 'Немає в наявності'
-                            : `В наявності: ${product.stock}`}
-                    </p>
-                    <button
-                        type="button"
-                        disabled={adding || product.stock === 0}
-                        onClick={handleAdd}
-                    >
-                        {product.stock === 0 ? 'Немає в наявності' : 'Додати в кошик'}
-                    </button>
+                <article className="product-details">
+                    <ProductImage product={product} className="product-details-image" />
+                    <div className="product-details-info">
+                        <span className="product-category">{product.category}</span>
+                        <h1>{product.name}</h1>
+                        <p>{product.description}</p>
+                        <dl className="product-specs">
+                            <dt>Виробник</dt>
+                            <dd>{product.manufacturer || 'Не вказано'}</dd>
+                            <dt>Склад</dt>
+                            <dd>{product.composition || 'Не вказано'}</dd>
+                        </dl>
+                        <p className="product-price">{formatPrice(product.price)}</p>
+                        <p className="muted">
+                            {product.stock === 0
+                                ? 'Немає в наявності'
+                                : `В наявності: ${product.stock}`}
+                        </p>
+                        <button
+                            type="button"
+                            disabled={adding || product.stock === 0}
+                            onClick={handleAdd}
+                        >
+                            {product.stock === 0 ? 'Немає в наявності' : 'Додати в кошик'}
+                        </button>
+                    </div>
                 </article>
             )}
         </div>
