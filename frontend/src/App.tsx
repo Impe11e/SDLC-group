@@ -1,10 +1,8 @@
 import { useEffect, useMemo, useState } from 'react';
 import { Cart } from './components/Cart';
-import LoginForm from './components/auth/LoginForm';
-import RegisterForm from './components/auth/RegisterForm';
 import { Checkout } from './components/Checkout';
 import { OrderHistory } from './components/OrderHistory';
-import ProfilePage from './components/ProfilePage';
+import { Header } from './components/Header';
 import { ProductList } from './components/ProductList';
 import { ApiError, getErrorMessage } from './services/api';
 import { cartService } from './services/cartService';
@@ -110,18 +108,9 @@ export default function App() {
 
     return (
         <div className="app">
-            <header>
-                <h1>Інтернет-магазин спортивного харчування</h1>
-            </header>
+            <Header />
 
             <main>
-                <section aria-label="Автентифікація">
-                    <LoginForm />
-                    <RegisterForm />
-                </section>
-
-                <ProfilePage />
-
                 {error && (
                     <div className="alert" role="alert">
                         {error}
