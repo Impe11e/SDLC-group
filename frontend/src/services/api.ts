@@ -1,4 +1,11 @@
 const CURRENT_USER_ID = 1;
+const TOKEN_KEY = 'token';
+
+export const tokenStorage = {
+    get: () => localStorage.getItem(TOKEN_KEY),
+    set: (token: string) => localStorage.setItem(TOKEN_KEY, token),
+    clear: () => localStorage.removeItem(TOKEN_KEY),
+};
 
 export class ApiError extends Error {
     readonly status: number;
@@ -13,14 +20,19 @@ export class ApiError extends Error {
 type HttpMethod = 'GET' | 'POST' | 'PUT' | 'DELETE';
 
 export async function request<T>(method: HttpMethod, path: string, body?: unknown): Promise<T> {
+    const token = tokenStorage.get();
+    const headers: Record<string, string> = { 'Content-Type': 'application/json' };
+    if (token) {
+        headers.Authorization = `Bearer ${token}`;
+    } else {
+        headers['X-User-Id'] = String(CURRENT_USER_ID);
+    }
+
     let response: Response;
     try {
         response = await fetch(`/api${path}`, {
             method,
-            headers: {
-                'Content-Type': 'application/json',
-                'X-User-Id': String(CURRENT_USER_ID),
-            },
+            headers,
             body: body === undefined ? undefined : JSON.stringify(body),
         });
     } catch {
