@@ -2,7 +2,8 @@ import { pool } from '../../db/pool.js';
 import type { IProductRepository, Product } from '../../types/product.js';
 
 const SELECT_PRODUCT = `
-    SELECT id, name, description, category, price::float8 AS price, stock
+    SELECT id, name, description, category, price::float8 AS price, stock,
+           manufacturer, composition, image_url AS "imageUrl"
     FROM products
 `;
 

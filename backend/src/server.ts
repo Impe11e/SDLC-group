@@ -4,7 +4,7 @@ import { checkDbConnection } from './db/pool.js';
 const port = Number(process.env.PORT) || 3000;
 
 checkDbConnection()
-    .then(() => console.log('Connected to PostgreSQL'))
+    .then(() => console.info('Connected to PostgreSQL'))
     .catch((err: NodeJS.ErrnoException) =>
         console.error(
             `PostgreSQL is unavailable (${err.code ?? err.message}). Run: docker compose up -d`
@@ -12,5 +12,5 @@ checkDbConnection()
     );
 
 app.listen(port, () => {
-    console.log(`Server is running on http://localhost:${port}`);
+    console.info(`Server is running on http://localhost:${port}`);
 });

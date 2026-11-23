@@ -1,17 +1,36 @@
 {
     "name": "SDLC",
+    "private": true,
     "type": "module",
+    "workspaces": [
+        "backend",
+        "frontend"
+    ],
     "devDependencies": {
-        "@eslint/js": "^9.39.5",
+        "@eslint/js": "^10.0.1",
+        "@types/node": "^22.20.5",
         "eslint": "^10.12.0",
-        "eslint-config-prettier": "^9.1.2",
-        "globals": "^15.15.0",
+        "eslint-config-prettier": "^10.1.8",
+        "globals": "^17.12.0",
         "husky": "^9.1.7",
         "lint-staged": "^17.6.0",
-        "prettier": "^3.9.10"
+        "prettier": "^3.9.10",
+        "typescript": "~6.0.2",
+        "typescript-eslint": "^8.74.0"
+    },
+    "engines": {
+        "node": ">=22.13.0"
     },
     "scripts": {
-        "prepare": "husky"
+        "prepare": "husky",
+        "db:up": "docker compose up -d",
+        "db:down": "docker compose down",
+        "db:migrate": "docker compose exec -T db sh -c 'psql -v ON_ERROR_STOP=1 -U \"$POSTGRES_USER\" -d \"$POSTGRES_DB\"' < backend/db/03_product_details.sql",
+        "dev:backend": "npm run dev -w backend",
+        "dev:frontend": "npm run dev -w frontend",
+        "build": "npm run build --workspaces",
+        "test": "npm test -w backend",
+        "lint": "eslint backend && npm run lint -w frontend"
     },
     "lint-staged": {
         "*.{ts,js,tsx,jsx}": [
