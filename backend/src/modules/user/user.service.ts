@@ -1,3 +1,4 @@
+import { conflict, notFound } from '../../errors/http-error.js';
 import type { IUserRepository } from '../../types/user.js';
 
 export class UserService {
@@ -9,13 +10,17 @@ export class UserService {
 
     async getProfile(id: number) {
         const user = await this.repo.findById(id);
-        if (!user) throw new Error('User not found');
+        if (!user) throw notFound('Користувача не знайдено');
         return user;
     }
 
     async updateName(id: number, nickname: string) {
-        const user = await this.repo.updateNickname(id, nickname);
-        if (!user) throw new Error('User not found');
+        const cleanNickname = nickname.trim();
+        if (await this.repo.isNicknameTaken(cleanNickname, id)) {
+            throw conflict('Цей нікнейм уже зайнятий');
+        }
+        const user = await this.repo.updateNickname(id, cleanNickname);
+        if (!user) throw notFound('Користувача не знайдено');
         return user;
     }
 }
