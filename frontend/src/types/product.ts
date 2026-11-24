@@ -10,6 +10,8 @@ export interface Product {
     imageUrl: string;
 }
 
+export type ProductInput = Omit<Product, 'id'>;
+
 export interface ProductListProps {
     products: Product[];
     cartQuantities: Record<number, number>;
