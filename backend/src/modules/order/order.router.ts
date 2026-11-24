@@ -1,5 +1,5 @@
 import { Router } from 'express';
-import { getUserId, userContext } from '../../middleware/user-context.middleware.js';
+import { authRequired, getUserId } from '../../middleware/auth.middleware.js';
 import { parseId } from '../product/product.schema.js';
 import { OrderService } from './order.service.js';
 import { PgOrderRepository } from './order.repository.js';
@@ -8,7 +8,7 @@ const orderService = new OrderService(new PgOrderRepository());
 
 export const orderRouter = Router();
 
-orderRouter.use(userContext);
+orderRouter.use(authRequired);
 
 orderRouter.post('/', async (req, res, next) => {
     try {
