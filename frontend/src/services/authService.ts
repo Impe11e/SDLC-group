@@ -17,6 +17,13 @@ export const authService = {
     async register(nickname: string, email: string, password: string): Promise<void> {
         await request('POST', '/auth/register', { nickname, email, password });
     },
+    async forgotPassword(email: string): Promise<void> {
+        await request('POST', '/auth/forgot-password', { email });
+    },
+
+    async resetPassword(token: string, password: string): Promise<void> {
+        await request('POST', '/auth/reset-password', { token, password });
+    },
 
     logout(): void {
         tokenStorage.clear();

@@ -10,6 +10,9 @@ export default function LoginPage() {
             <p>
                 Немає акаунта? <Link to="/register">Реєстрація</Link>
             </p>
+            <p>
+                <Link to="/forgot-password">Забули пароль?</Link>
+            </p>
             <Link to="/">← До каталогу</Link>
         </div>
     );

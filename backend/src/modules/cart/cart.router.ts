@@ -1,5 +1,5 @@
 import { Router } from 'express';
-import { getUserId, userContext } from '../../middleware/user-context.middleware.js';
+import { authRequired, getUserId } from '../../middleware/auth.middleware.js';
 import { PgProductRepository } from '../product/product.repository.js';
 import { parseId } from '../product/product.schema.js';
 import { PgCartRepository } from './cart.repository.js';
@@ -10,7 +10,7 @@ const cartService = new CartService(new PgCartRepository(), new PgProductReposit
 
 export const cartRouter = Router();
 
-cartRouter.use(userContext);
+cartRouter.use(authRequired);
 
 cartRouter.get('/', async (_req, res, next) => {
     try {
