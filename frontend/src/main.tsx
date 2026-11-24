@@ -8,6 +8,8 @@ import RegisterPage from './components/RegisterPage.tsx';
 import ProductPage from './components/ProductPage.tsx';
 import OrderSuccessPage from './components/OrderSuccessPage.tsx';
 import ProfilePage from './components/ProfilePage.tsx';
+import ForgotPasswordPage from './components/ForgotPasswordPage.tsx';
+import ResetPasswordPage from './components/ResetPasswordPage.tsx';
 
 createRoot(document.getElementById('root')!).render(
     <StrictMode>
@@ -19,6 +21,8 @@ createRoot(document.getElementById('root')!).render(
                 <Route path="/products/:id" element={<ProductPage />} />
                 <Route path="/order-success" element={<OrderSuccessPage />} />
                 <Route path="/profile" element={<ProfilePage />} />
+                <Route path="/forgot-password" element={<ForgotPasswordPage />} />
+                <Route path="/reset-password" element={<ResetPasswordPage />} />
             </Routes>
         </BrowserRouter>
     </StrictMode>

@@ -16,3 +16,19 @@ export function validateLogin(data: Partial<LoginInput>): string | null {
     if (!data.login || !data.password) return 'Вкажіть логін і пароль';
     return null;
 }
+
+export function validateForgotPassword(data: { email?: unknown }): string | null {
+    if (typeof data.email !== 'string' || !data.email.includes('@')) return 'Некоректний email';
+    return null;
+}
+
+export function validateResetPassword(data: {
+    token?: unknown;
+    password?: unknown;
+}): string | null {
+    if (typeof data.token !== 'string' || !data.token) return 'Відсутній токен';
+    if (typeof data.password !== 'string' || data.password.length < 8) {
+        return 'Пароль має містити щонайменше 8 символів';
+    }
+    return null;
+}

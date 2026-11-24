@@ -25,3 +25,9 @@ export interface LoginInput {
     login: string;
     password: string;
 }
+
+export interface IPasswordResetRepository {
+    create(userId: number, tokenHash: string, expiresAt: Date): Promise<void>;
+    findValid(tokenHash: string): Promise<{ id: number; userId: number } | null>;
+    consume(id: number, userId: number, passwordHash: string): Promise<void>;
+}
