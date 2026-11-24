@@ -1,5 +1,5 @@
 import { notFound } from '../../errors/http-error.js';
-import type { IProductRepository, ProductInput } from '../../types/product.js';
+import type { IProductRepository, ProductFilters, ProductInput } from '../../types/product.js';
 
 export class ProductService {
     private readonly repo: IProductRepository;
@@ -8,8 +8,8 @@ export class ProductService {
         this.repo = repo;
     }
 
-    async getAll() {
-        return this.repo.findAll();
+    async getAll(filters?: ProductFilters) {
+        return this.repo.findAll(filters);
     }
 
     async getById(id: number) {

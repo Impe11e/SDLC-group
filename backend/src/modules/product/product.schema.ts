@@ -1,4 +1,4 @@
-import type { ProductInput } from '../../types/product.js';
+import type { ProductFilters, ProductInput } from '../../types/product.js';
 
 export function parseId(value: unknown): number | null {
     const id = Number(value);
@@ -31,5 +31,14 @@ export function toProductInput(data: Record<string, unknown>): ProductInput {
         manufacturer: text(data.manufacturer),
         composition: text(data.composition),
         imageUrl: text(data.imageUrl),
+    };
+}
+
+export function parseProductFilters(query: Record<string, unknown>): ProductFilters {
+    const search = typeof query.search === 'string' ? query.search.trim().slice(0, 100) : '';
+    const category = typeof query.category === 'string' ? query.category.trim() : '';
+    return {
+        search: search || undefined,
+        category: category || undefined,
     };
 }

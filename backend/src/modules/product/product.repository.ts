@@ -1,6 +1,11 @@
 import { conflict } from '../../errors/http-error.js';
 import { pool } from '../../db/pool.js';
-import type { IProductRepository, Product, ProductInput } from '../../types/product.js';
+import type {
+    IProductRepository,
+    Product,
+    ProductFilters,
+    ProductInput,
+} from '../../types/product.js';
 
 const PRODUCT_COLUMNS = `
     id, name, description, category, price::float8 AS price, stock,
@@ -10,8 +15,25 @@ const PRODUCT_COLUMNS = `
 const SELECT_PRODUCT = `SELECT ${PRODUCT_COLUMNS} FROM products`;
 
 export class PgProductRepository implements IProductRepository {
-    async findAll(): Promise<Product[]> {
-        const { rows } = await pool.query<Product>(`${SELECT_PRODUCT} ORDER BY id`);
+    async findAll(filters: ProductFilters = {}): Promise<Product[]> {
+        const conditions: string[] = [];
+        const params: unknown[] = [];
+
+        if (filters.search) {
+            const escaped = filters.search.replace(/[\\%_]/g, '\\$&');
+            params.push(`%${escaped}%`);
+            conditions.push(`name ILIKE $${params.length}`);
+        }
+        if (filters.category) {
+            params.push(filters.category);
+            conditions.push(`category = $${params.length}`);
+        }
+
+        const where = conditions.length > 0 ? `WHERE ${conditions.join(' AND ')}` : '';
+        const { rows } = await pool.query<Product>(
+            `${SELECT_PRODUCT} ${where} ORDER BY id`,
+            params
+        );
         return rows;
     }
 

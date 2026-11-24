@@ -12,8 +12,13 @@ export interface Product {
 
 export type ProductInput = Omit<Product, 'id'>;
 
+export interface ProductFilters {
+    search?: string;
+    category?: string;
+}
+
 export interface IProductRepository {
-    findAll(): Promise<Product[]>;
+    findAll(filters?: ProductFilters): Promise<Product[]>;
     findById(id: number): Promise<Product | null>;
     create(input: ProductInput): Promise<Product>;
     update(id: number, input: ProductInput): Promise<Product | null>;
