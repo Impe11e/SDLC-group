@@ -32,4 +32,19 @@ export const authService = {
     isLoggedIn(): boolean {
         return tokenStorage.get() !== null;
     },
+
+    getRole(): string | null {
+        const token = tokenStorage.get();
+        if (!token) return null;
+        try {
+            const payload = token.split('.')[1].replace(/-/g, '+').replace(/_/g, '/');
+            return JSON.parse(atob(payload)).role ?? null;
+        } catch {
+            return null;
+        }
+    },
+
+    isAdmin(): boolean {
+        return authService.getRole() === 'ADMIN';
+    },
 };
