@@ -1,4 +1,3 @@
-const CURRENT_USER_ID = 1;
 const TOKEN_KEY = 'token';
 
 export const tokenStorage = {
@@ -24,8 +23,6 @@ export async function request<T>(method: HttpMethod, path: string, body?: unknow
     const headers: Record<string, string> = { 'Content-Type': 'application/json' };
     if (token) {
         headers.Authorization = `Bearer ${token}`;
-    } else {
-        headers['X-User-Id'] = String(CURRENT_USER_ID);
     }
 
     let response: Response;
@@ -42,6 +39,7 @@ export async function request<T>(method: HttpMethod, path: string, body?: unknow
     const data = await response.json().catch(() => null);
 
     if (!response.ok) {
+        if (response.status === 401 && token) tokenStorage.clear();
         const message = data?.error ?? data?.message ?? `Помилка сервера (${response.status})`;
         throw new ApiError(response.status, message);
     }

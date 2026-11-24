@@ -17,11 +17,11 @@ import { authService } from './services/authService';
 const EMPTY_CART: CartData = { items: [], totalAmount: 0 };
 
 async function fetchShopData() {
-    const [products, cart, orders] = await Promise.all([
-        productService.getAll(),
-        cartService.get(),
-        orderService.getAll(),
-    ]);
+    const products = await productService.getAll();
+    if (!authService.isLoggedIn()) {
+        return { products, cart: EMPTY_CART, orders: [] as Order[] };
+    }
+    const [cart, orders] = await Promise.all([cartService.get(), orderService.getAll()]);
     return { products, cart, orders };
 }
 
@@ -68,12 +68,12 @@ export default function App() {
     };
 
     const handleAddToCart = (productId: number) => {
-    if (!authService.isLoggedIn()) {
-        navigate('/login');
-        return;
-    }
-    return runCartAction(() => cartService.add(productId));
-};
+        if (!authService.isLoggedIn()) {
+            navigate('/login');
+            return;
+        }
+        return runCartAction(() => cartService.add(productId));
+    };
 
     const handleUpdateQuantity = (productId: number, quantity: number) =>
         runCartAction(() => cartService.updateQuantity(productId, Math.max(quantity, 0)));
@@ -99,9 +99,9 @@ export default function App() {
         setSuccessMessage(null);
         try {
             const order = await orderService.create(formData);
-             navigate('/order-success', {
-            state: { orderId: order.id, totalAmount: order.totalAmount },
-        });
+            navigate('/order-success', {
+                state: { orderId: order.id, totalAmount: order.totalAmount },
+            });
             return true;
         } catch (err) {
             setError(getErrorMessage(err));
