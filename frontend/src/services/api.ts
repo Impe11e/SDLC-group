@@ -16,7 +16,7 @@ export class ApiError extends Error {
     }
 }
 
-type HttpMethod = 'GET' | 'POST' | 'PUT' | 'DELETE';
+type HttpMethod = 'GET' | 'POST' | 'PUT' | 'PATCH' | 'DELETE';
 
 export async function request<T>(method: HttpMethod, path: string, body?: unknown): Promise<T> {
     const token = tokenStorage.get();

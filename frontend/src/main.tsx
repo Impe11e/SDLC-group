@@ -7,6 +7,7 @@ import LoginPage from './components/LoginPage.tsx';
 import RegisterPage from './components/RegisterPage.tsx';
 import ProductPage from './components/ProductPage.tsx';
 import OrderSuccessPage from './components/OrderSuccessPage.tsx';
+import ProfilePage from './components/ProfilePage.tsx';
 
 createRoot(document.getElementById('root')!).render(
     <StrictMode>
@@ -17,6 +18,7 @@ createRoot(document.getElementById('root')!).render(
                 <Route path="/register" element={<RegisterPage />} />
                 <Route path="/products/:id" element={<ProductPage />} />
                 <Route path="/order-success" element={<OrderSuccessPage />} />
+                <Route path="/profile" element={<ProfilePage />} />
             </Routes>
         </BrowserRouter>
     </StrictMode>

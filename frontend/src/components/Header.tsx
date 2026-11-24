@@ -15,9 +15,12 @@ export function Header() {
             <h1>Інтернет-магазин спортивного харчування</h1>
             <nav>
                 {loggedIn ? (
-                    <button type="button" onClick={handleLogout}>
-                        Вийти
-                    </button>
+                    <>
+                        <Link to="/profile">Профіль</Link> |{' '}
+                        <button type="button" onClick={handleLogout}>
+                            Вийти
+                        </button>
+                    </>
                 ) : (
                     <>
                         <Link to="/login">Увійти</Link> | <Link to="/register">Реєстрація</Link>
