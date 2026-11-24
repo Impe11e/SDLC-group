@@ -16,7 +16,11 @@ export function Header() {
             <nav>
                 {loggedIn ? (
                     <>
-                        <Link to="/profile">Профіль</Link> |{' '}
+                        {authService.isAdmin() && (
+                            <>
+                                <Link to="/admin/products">Адмінка</Link> |{' '}
+                            </>
+                        )}
                         <button type="button" onClick={handleLogout}>
                             Вийти
                         </button>
