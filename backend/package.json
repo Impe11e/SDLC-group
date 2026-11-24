@@ -7,6 +7,7 @@
         "dev": "tsx watch --env-file-if-exists=.env src/server.ts",
         "build": "tsc",
         "start": "node --env-file-if-exists=.env dist/server.js",
+        "migrate": "node --env-file-if-exists=.env dist/db/migrate.js",
         "test": "vitest run",
         "test:watch": "vitest"
     },
