@@ -1,29 +1,33 @@
 import { Router } from 'express';
-import { UserService } from './user.service.js';
-import { InMemoryUserRepository } from './user.repository.js';
+import { badRequest } from '../../errors/http-error.js';
+import { authRequired, getUserId } from '../../middleware/auth.middleware.js';
+import { PgUserRepository } from './user.repository.js';
 import { validateUpdateName } from './user.schema.js';
+import { UserService } from './user.service.js';
 
-const userService = new UserService(new InMemoryUserRepository());
+const userService = new UserService(new PgUserRepository());
 
 export const userRouter = Router();
 
-userRouter.get('/:id', async (req, res) => {
-  try {
-    res.json(await userService.getProfile(Number(req.params.id)));
-  } catch (err) {
-    res.status(404).json({ error: (err as Error).message });
-  }
+userRouter.use(authRequired);
+
+userRouter.get('/me', async (_req, res, next) => {
+    try {
+        res.json(await userService.getProfile(getUserId(res)));
+    } catch (err) {
+        next(err);
+    }
 });
 
-userRouter.patch('/:id', async (req, res) => {
-  const error = validateUpdateName(req.body);
-  if (error) {
-    res.status(400).json({ error });
-    return;
-  }
-  try {
-    res.json(await userService.updateName(Number(req.params.id), req.body.nickname));
-  } catch (err) {
-    res.status(404).json({ error: (err as Error).message });
-  }
+userRouter.patch('/me', async (req, res, next) => {
+    const error = validateUpdateName(req.body ?? {});
+    if (error) {
+        next(badRequest(error));
+        return;
+    }
+    try {
+        res.json(await userService.updateName(getUserId(res), req.body.nickname));
+    } catch (err) {
+        next(err);
+    }
 });
