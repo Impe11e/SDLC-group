@@ -6,6 +6,7 @@ import { productService } from '../services/productService';
 import type { Product } from '../types/product';
 import { formatPrice } from '../utils/format';
 import { ProductImage } from './ProductImage';
+import { ReviewSection } from './ReviewSection';
 
 export default function ProductPage() {
     const { id } = useParams();
@@ -89,6 +90,7 @@ export default function ProductPage() {
                     </div>
                 </article>
             )}
+            {product && <ReviewSection productId={product.id} />}
         </div>
     );
 }
